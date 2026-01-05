@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Wish!</title>
+    <style>
+        :root {
+            --cake-color: #f4d03f;
+            --frosting-color: #ffffff;
+            --candle-color: #ff6b6b;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; transition: background-color 0.8s ease;
+            background-color: #ffe5ec; 
+        }
+
+        .container { 
+            text-align: center; 
+            cursor: pointer; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+        }
+
+        #main-text { 
+            font-size: 2.5rem; 
+            font-weight: bold; 
+            color: #444; 
+            margin-bottom: 40px; 
+            min-height: 4rem;
+            padding: 0 20px;
+        }
+
+        /* --- CSS CAKE DESIGN --- */
+        #cake-stage { display: none; position: relative; width: 200px; height: 150px; }
+        
+        .cake-body {
+            position: absolute; bottom: 0; width: 200px; height: 100px;
+            background: var(--cake-color); border-radius: 10px 10px 0 0;
+            box-shadow: inset 0 -10px 0 rgba(0,0,0,0.1);
+        }
+
+        .frosting {
+            position: absolute; top: 90px; width: 200px; height: 30px;
+            background: var(--frosting-color); border-radius: 20px;
+        }
+
+        .candle {
+            position: absolute; bottom: 100px; left: 90px;
+            width: 20px; height: 50px; background: var(--candle-color);
+            border-radius: 3px;
+        }
+
+        .flame {
+            position: absolute; top: -25px; left: 2.5px;
+            width: 15px; height: 25px; background: orange;
+            border-radius: 50% 50% 20% 20%;
+            animation: flicker 0.2s infinite alternate;
+            box-shadow: 0 0 15px orange;
+        }
+
+        .smoke {
+            display: none; position: absolute; top: -30px; left: 5px;
+            font-size: 20px; color: #888; animation: rise 2s forwards;
+        }
+
+        @keyframes flicker { from { transform: scale(1); opacity: 0.9; } to { transform: scale(1.2); opacity: 1; } }
+        @keyframes rise { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-40px); } }
+
+        .popper { position: absolute; font-size: 2rem; animation: fall 4s linear forwards; z-index: 100; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="wrapper" onclick="handleInteraction()">
+        <div id="main-text">Click if its your birthday</div>
+        
+        <div id="cake-stage">
+            <div class="candle">
+                <div class="flame" id="candle-flame"></div>
+                <div class="smoke" id="candle-smoke">💨</div>
+            </div>
+            <div class="cake-body"></div>
+            <div class="frosting"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentState = "START";
+
+        function handleInteraction() {
+            if (currentState === "START") {
+                showCake();
+            }
+        }
+
+        function showCake() {
+            currentState = "COUNTDOWN";
+            document.getElementById('cake-stage').style.display = "block";
+            startCountdown(3);
+        }
+
+        function startCountdown(num) {
+            const textDisplay = document.getElementById('main-text');
+            if (num > 0) {
+                textDisplay.innerText = "Blow it in " + num + "...";
+                setTimeout(() => startCountdown(num - 1), 1000);
+            } else {
+                textDisplay.innerText = "Blow!";
+                setTimeout(blowOut, 800);
+            }
+        }
+
+        function blowOut() {
+            // Put out the candle
+            document.getElementById('candle-flame').style.display = "none";
+            document.getElementById('candle-smoke').style.display = "block";
+            
+            // Brighten the screen
+            document.body.style.backgroundColor = "#ffffff";
+            document.getElementById('main-text').innerText = "HAPPY BIRTHDAYY MY LOVE!!!!";
+            document.getElementById('main-text').style.color = "#ff477e";
+            
+            // Continuous poppers for a big celebration
+            setInterval(createPopper, 150);
+            
+            // Set state to finished so no more clicks trigger anything
+            currentState = "FINISHED";
+        }
+
+        function createPopper() {
+            const p = document.createElement('div');
+            p.className = 'popper';
+            const icons = ['🎉', '✨', '🎈', '💖', '🎊', '🍰', '❤️', '🌟'];
+            p.innerText = icons[Math.floor(Math.random() * icons.length)];
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.top = '-50px';
+            p.style.fontSize = (Math.random() * 25 + 20) + 'px';
+            document.body.appendChild(p);
+            
+            // Remove poppers after animation to keep the page smooth
+            setTimeout(() => p.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
